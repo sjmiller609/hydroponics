@@ -1,5 +1,0 @@
-[raspi]
-raspi1
-
-[infra]
-alpha ansible_connection=local
