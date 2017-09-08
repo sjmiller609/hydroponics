@@ -1,0 +1,12 @@
+---
+- hosts: raspi
+  remote_user: pi
+
+  vars_prompt:
+    - name: "
+      prompt: "what is your name?"
+    - name: "quest"
+      prompt: "what is your quest?"
+    - name: "favcolor"
+      prompt: "what is your favorite color?
+
