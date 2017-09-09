@@ -4,6 +4,7 @@
 #
 # This script will enable I2C and install i2c-tools on your Raspberry Pi 
 #
+#TODO: convert to ansible, manage lifecycle remotely
 
 # check if sudo is used
 if [ "$(id -u)" != 0 ]; then
@@ -42,7 +43,7 @@ fi
 
 # install i2c-tools
 echo '>>> Install i2c-tools'
-apt-get install -y i2c-tools python-smb
+apt-get install -y i2c-tools python-smb tmux git
 
 echo "setting flag in i2c_bcm..."
 if grep -q 'For Pi-16ADC' /etc/rc.local; then
