@@ -8,7 +8,7 @@ import json
 
 class HydrationMonitor():
 
-    def __init__(self,channels,log='hydration.log',write_period=30):
+    def __init__(self,channels,log='hydration.csv',write_period=30):
         self.kill_switch = False
         self.write_period = write_period
         self.timer = Timer()
