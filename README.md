@@ -28,4 +28,5 @@ monitor = HydrationMonitor([0])#listen only channel zero
 
 ## troubleshooting
 
-- (ADC userguide)[http://alchemy-power.com/wp-content/uploads/2017/03/Pi-16ADC-User-Guide.pdf]
+- [ADC userguide](http://alchemy-power.com/wp-content/uploads/2017/03/Pi-16ADC-User-Guide.pdf)
+- [ADC downloads](http://alchemy-power.com/downloads)
