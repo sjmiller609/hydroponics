@@ -26,3 +26,6 @@ monitor = HydrationMonitor([0])#listen only channel zero
 - now press "control+b", then "d"
 - results logged to "hydration.csv"
 
+## troubleshooting
+
+- (ADC userguide)[http://alchemy-power.com/wp-content/uploads/2017/03/Pi-16ADC-User-Guide.pdf]
