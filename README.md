@@ -4,27 +4,17 @@
 - boot raspi
 - ssh to machine
 - change password
-- ssh-key gen
-- add ~/.ssh/id_rsa.pub as r/w deploy key in github
-- clone this repo, cd into it
-- sudo /bin/bash setup.sh
-
-## start monitor
+- add to ansible inventory
+- start VM to use as an ansible control node
 
 ```
-tmux
-python
+vagrant up
 ```
-
-- interpreter starts...
+- cd /vagrant/monitor
 
 ```
-from moisture_monitor import HydrationMonitor
-monitor = HydrationMonitor([0])#listen only channel zero
+ansible-playbook -i ./hosts.yml ./deploy.yml
 ```
-
-- now press "control+b", then "d"
-- results logged to "hydration.csv"
 
 ## troubleshooting
 
