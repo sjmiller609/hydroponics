@@ -1,0 +1,16 @@
+---
+
+- name: install packages
+  become: yes
+  apt:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - nmap
+    - python-pip
+
+- name: install nmap for python
+  become: yes
+  pip:
+    name: python-nmap
+    state: present

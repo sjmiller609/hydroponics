@@ -1,0 +1,68 @@
+---
+
+- name: copy python code to device
+  become: yes
+  copy:
+    force: yes
+    owner: pi
+    group: pi
+    src: "{{ playbook_dir }}/monitor"
+    dest: "{{ ansible_env.HOME }}/"
+    directory_mode: true
+    mode: u+rwx
+
+- name: ensure correct permissions
+  become: yes
+  file:
+    recurse: yes
+    path: "{{ ansible_env.HOME }}"
+    owner: pi
+    group: pi
+    mode: u=rwx
+  changed_when: false
+
+- name: install environment
+  pip:
+    requirements: "{{ ansible_env.HOME }}/monitor/requirements.txt"
+    virtualenv: "{{ ansible_env.HOME }}/monitor/env"
+
+- name: check for process
+  register: check1
+  shell: tmux capture-pane -pt "$target-pane"
+  changed_when: false
+  tags:
+    - check
+
+- pause: minutes=1
+  tags:
+    - check
+
+- name: check for process
+  register: check2
+  shell: tmux capture-pane -pt "$target-pane"
+  changed_when: false
+  tags:
+    - check
+
+- name: comparing tmux captures
+  set_fact:
+    restart_necessary: '{{ check1.stdout == check2.stdout }}'
+  changed_when: restart_necessary
+  tags:
+    - check
+
+- name: killing tmux if script restart is necessary
+  when: restart_necessary
+  shell: pkill tmux
+  tags:
+    - check
+
+- name: starting script in tmux session
+  when: restart_necessary
+  shell: tmux new-session -d -s monitor "$HOME/monitor/env/bin/python -i $HOME/monitor/moisture_monitor.py"
+  args:
+    chdir: "{{ ansible_env.HOME }}/monitor"
+  tags:
+    - check
+
+

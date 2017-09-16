@@ -1,0 +1,24 @@
+---
+
+- hosts: local
+  gather_facts: false
+  roles:
+    - scanner
+  tags:
+    - scan
+
+- hosts: raspi
+  remote_user: pi
+  roles:
+    - pi16adc
+  tags:
+    - pi16adc
+    - raspi
+
+- hosts: raspi
+  remote_user: pi
+  roles:
+    - moisturemon
+  tags:
+    - monitor
+    - raspi

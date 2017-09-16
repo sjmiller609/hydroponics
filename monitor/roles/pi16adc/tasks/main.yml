@@ -1,0 +1,51 @@
+---
+- name: ensure necessary modules installed
+  become: yes
+  modprobe:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - i2c-bcm2708
+    - i2c-dev
+
+- name: manage boot configuration
+  become: yes
+  lineinfile:
+    path: /boot/config.txt
+    line: '{{ item }}'
+  with_items:
+    - 'dtparam=i2c1=on'
+    - 'dtparam=i2_arm=on'
+
+- name: manage module blacklist
+  become: yes
+  lineinfile:
+    path: /etc/modprobe.d/raspi-blacklist.conf
+    regexp: '{{ item }}'
+    state: absent
+  with_items:
+    - '^blacklist spi-bcm2708'
+    - '^blacklist i2c-bcm2708'
+
+- name: set module flag in rc.local
+  become: yes
+  lineinfile:
+    path: /etc/rc.local
+    line: echo -n 1 > /sys/module/i2c_bcm2708/parameters/combined
+    insertbefore: exit 0
+
+- name: install required packages
+  become: yes
+  apt:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - build-essential
+    - libi2c-dev
+    - i2c-tools
+    - libffi-dev
+    - python-dev
+    - python-pip
+    - python-virtualenv
+    - python-rpi.gpio
+    - tmux

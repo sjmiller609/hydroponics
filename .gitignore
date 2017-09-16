@@ -1,2 +1,5 @@
 *.pyc
 hydration.csv
+monitor/hosts.yml
+.vagrant
+*.vagrant*
