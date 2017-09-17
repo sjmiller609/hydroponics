@@ -11,7 +11,7 @@ moistures = [float(reading.split(",")[1]) for reading in data.split(";")]
 times = [float(reading.split(",")[2]) for reading in data.split(";")]
 times = mdate.epoch2num(times)
 fig, ax = plt.subplots()
-ax.plot_date(times, moistures)
+ax.plot_date(times, moistures,markersize=2)
 
 # Choose your xtick format string
 date_fmt = '%d-%m-%y %H:%M:%S'

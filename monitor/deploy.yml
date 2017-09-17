@@ -23,6 +23,7 @@
   tags:
     - monitor
     - raspi
+    - check
 
 - hosts: raspi
   remote_user: pi
@@ -30,6 +31,7 @@
     - copydata
   tags:
     - copy
+    - check
 
 - hosts: local
   gather_facts: false
@@ -40,4 +42,5 @@
       chdir: '{{ playbook_dir }}'
   tags:
     - copy
+    - check
 

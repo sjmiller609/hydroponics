@@ -32,12 +32,15 @@
   changed_when: false
   tags:
     - check
+  ignore_errors: true
 
 - pause: minutes=1
+  when: check1.failed is not defined
   tags:
     - check
 
 - name: check for process
+  when: check1.failed is not defined
   register: check2
   shell: tmux capture-pane -pt "$target-pane"
   changed_when: false
@@ -46,16 +49,18 @@
 
 - name: comparing tmux captures
   set_fact:
-    restart_necessary: '{{ check1.stdout == check2.stdout }}'
+    restart_necessary: '{{ check1.failed is defined or (check1.stdout == check2.stdout) }}'
   changed_when: restart_necessary
   tags:
     - check
+  ignore_errors: true
 
 - name: killing tmux if script restart is necessary
   when: restart_necessary
   shell: pkill tmux
   tags:
     - check
+  ignore_errors: true
 
 - name: starting script in tmux session
   when: restart_necessary

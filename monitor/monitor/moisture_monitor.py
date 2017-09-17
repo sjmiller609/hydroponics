@@ -4,6 +4,7 @@ from adc import adc
 from time import time, sleep
 from threading import Lock
 from thread import start_new_thread
+from threading import Thread
 import json
 
 class HydrationMonitor():
@@ -13,18 +14,22 @@ class HydrationMonitor():
         self.write_period = write_period
         self.timer = Timer()
         self.log = log
+        if not channels or len(channels) == 0:
+          channels = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         for channel in channels:
             self.add_channel(channel)
-        self.thread = start_new_thread(self._monitor,())
+        #self.thread = start_new_thread(self._monitor,())
+        self.thread = Thread(target=self._monitor,args=())
+        self.thread.start()
 
-    def add_channel(self,channel,period=30):
+    def add_channel(self,channel,period=60):
         self.timer.insert(channel,period)
 
     def remove_channel(self,channel):
         self.timer.delete(channel)
 
     def stop(self):
-        raise Exception("not working yet.")
+        #raise Exception("not working yet.")
         self.kill_switch = True
         self.thread.join()
 
@@ -50,6 +55,7 @@ class Node():
         self.period = period
         self.remaining = remaining
         self._next = None
+        print("new node created: "+str(channel)+","+str(period)+","+str(remaining))
 
     def __str__(self):
         build_json = {}
@@ -59,15 +65,18 @@ class Node():
         return json.dumps(build_json)
 
 class Timer():
-    def __init__(self,sample_period = 1):
+    def __init__(self,sample_period = 1, refresh_channels_period=60*10):
         #dummy node
         self.sample_period = sample_period
         self.front = Node(None,None,None)
+        self.last_reading = time()
         self.lock = Lock()
         self.readings = []
         self.channels = set()
         self.kill_switch = False
-        self.thread = start_new_thread(self._thread,())
+        #self.thread = start_new_thread(self._thread,())
+        self.thread = Thread(target=self._thread,args=())
+        self.thread.start()
 
     def get_readings(self):
         with self.lock:
@@ -81,8 +90,13 @@ class Timer():
             self.sample()
 
     def _dequeue(self):
+        time_since_last_reading = time() - self.last_reading
+        if time_since_last_reading < 1:
+            print("reading too quickly: sleeping "+str(time_since_last_reading)+"s")
+            sleep(1 - time_since_last_reading)
         reading = self.front._next.channel.getreading()
         _time = time()
+        self.last_reading = _time
         num = self.front._next.num
         period = self.front._next.period
         self.channels.remove(num)
@@ -112,7 +126,10 @@ class Timer():
                     subtract -= self.front._next.remaining
                     reading, channel, period, _time = self._dequeue()
                     self.readings.append((channel,reading,_time))
-                    self._insert(channel,period)
+                    if reading > 0.00: #if we got a reading, continue to read
+                        self._insert(channel,period)
+                    else:
+                        print("channel "+str(channel)+" got a reading "+str(reading)+", stopping recording on this channel.")
             #print("front node after sample:")
             #print(str(self.front._next))
             #print()
@@ -123,7 +140,8 @@ class Timer():
                 
     def _insert(self,channel,period):
         if channel in self.channels:
-            raise AttributeError("channel already inserted.")
+            #raise AttributeError("channel already inserted.")
+            return #don't throw error, just do nothing
         self.channels.add(channel)
         wait = period
         prev = self.front
@@ -135,6 +153,8 @@ class Timer():
         new_node = Node(channel,period,wait)
         new_node._next = prev._next
         prev._next = new_node
+        if new_node._next is not None:
+            new_node._next.remaining -= wait
 
     def delete(self,channel):
         #TODO
@@ -144,6 +164,12 @@ class Timer():
         self.kill_switch = True
         self.thread.join()
 
-
 if __name__ == "__main__":
-  monitor = HydrationMonitor([0])
+    monitor = None
+    while True:
+        #every 10 minutes, refresh checking all the channels
+        print("refreshing channels...")
+        monitor = HydrationMonitor([])
+        sleep(60*10)
+        monitor.stop()
+        sleep(15)
