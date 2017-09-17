@@ -10,7 +10,7 @@ from smbus import SMBus
 from sys import exit
 
 class Channel():
-    def __init__(self,channel,vref=2.5):
+    def __init__(self,channel,vref=5):
         self.bus = SMBus(1)
 
         self.address = 0b1110110

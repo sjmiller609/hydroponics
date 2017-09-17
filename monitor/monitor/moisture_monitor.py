@@ -91,9 +91,9 @@ class Timer():
 
     def _dequeue(self):
         time_since_last_reading = time() - self.last_reading
-        if time_since_last_reading < 1:
+        if time_since_last_reading < 5:
             print("reading too quickly: sleeping "+str(time_since_last_reading)+"s")
-            sleep(1 - time_since_last_reading)
+            sleep(5 - time_since_last_reading)
         reading = self.front._next.channel.getreading()
         _time = time()
         self.last_reading = _time

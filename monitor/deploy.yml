@@ -23,7 +23,6 @@
   tags:
     - monitor
     - raspi
-    - check
 
 - hosts: raspi
   remote_user: pi

@@ -10,6 +10,8 @@
     dest: "{{ ansible_env.HOME }}/"
     directory_mode: true
     mode: u+rwx
+  tags:
+    - check
 
 - name: ensure correct permissions
   become: yes
@@ -20,6 +22,8 @@
     group: pi
     mode: u=rwx
   changed_when: false
+  tags:
+    - check
 
 - name: install environment
   pip:
@@ -34,7 +38,7 @@
     - check
   ignore_errors: true
 
-- pause: minutes=1
+- pause: minutes=2
   when: check1.failed is not defined
   tags:
     - check
