@@ -1,0 +1,8 @@
+---
+- name: copy data from pi to localhost
+  fetch:
+    src: '{{ ansible_env.HOME }}/monitor/hydration.csv'
+    dest: '{{ playbook_dir }}/temp_data.csv'
+    flat: yes
+  register: result
+- debug: var=result

@@ -11,7 +11,7 @@
 - name: manage boot configuration
   become: yes
   lineinfile:
-    path: /boot/config.txt
+    dest: /boot/config.txt
     line: '{{ item }}'
   with_items:
     - 'dtparam=i2c1=on'
@@ -20,7 +20,7 @@
 - name: manage module blacklist
   become: yes
   lineinfile:
-    path: /etc/modprobe.d/raspi-blacklist.conf
+    dest: /etc/modprobe.d/raspi-blacklist.conf
     regexp: '{{ item }}'
     state: absent
   with_items:
@@ -30,7 +30,7 @@
 - name: set module flag in rc.local
   become: yes
   lineinfile:
-    path: /etc/rc.local
+    dest: /etc/rc.local
     line: echo -n 1 > /sys/module/i2c_bcm2708/parameters/combined
     insertbefore: exit 0
 

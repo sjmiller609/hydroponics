@@ -4,8 +4,9 @@
   gather_facts: false
   roles:
     - scanner
+    - devtools
   tags:
-    - scan
+    - local
 
 - hosts: raspi
   remote_user: pi
@@ -22,3 +23,21 @@
   tags:
     - monitor
     - raspi
+
+- hosts: raspi
+  remote_user: pi
+  roles:
+    - copydata
+  tags:
+    - copy
+
+- hosts: local
+  gather_facts: false
+  tasks:
+  - name:
+    shell: python ./update_data.py && rm ./temp_data.csv
+    args:
+      chdir: '{{ playbook_dir }}'
+  tags:
+    - copy
+

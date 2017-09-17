@@ -145,3 +145,5 @@ class Timer():
         self.thread.join()
 
 
+if __name__ == "__main__":
+  monitor = HydrationMonitor([0])
